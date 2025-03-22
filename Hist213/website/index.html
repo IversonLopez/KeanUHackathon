@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Scam Analytics | Email Scam Protector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #00bcd4;
+            --light-bg: #f9f9f9;
+            --dark-bg: #2c3e50;
+            --text-color: #333;
+            --light-text: #7f8c8d;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--light-bg);
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--dark-bg);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--light-text);
+            margin-bottom: 20px;
+        }
+        
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        select, input, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 100%;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color var(--transition-speed);
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 0 10px;
+            transition: background-color var(--transition-speed);
+        }
+        
+        .nav-links a:hover {
+            background-color: #2980b9;
+        }
+        
+        .nav-links .secondary {
+            background-color: #ecf0f1;
+            color: var(--primary-color);
+        }
+        
+        .nav-links .secondary:hover {
+            background-color: #dfe6e9;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: transform var(--transition-speed);
+            cursor: pointer;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: var(--light-text);
+        }
+        
+        .visualization-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .visualization-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .visualization-title {
+            margin: 0;
+            color: var(--dark-bg);
+        }
+        
+        .loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .loader i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .trend-up {
+            color: var(--danger-color);
+        }
+        
+        .trend-down {
+            color: var(--secondary-color);
+        }
+        
+        .trend-stable {
+            color: var(--warning-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--light-text);
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+        }
+        
+        .insights-container {
+            background-color: #f3f8fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--info-color);
+            margin: 30px 0;
+        }
+        
+        .insight-title {
+            color: var(--info-color);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .insight-title i {
+            margin-right: 10px;
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .filter-tag {
+            background-color: #e1f5fe;
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-tag i {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        
+        .filter-tag i:hover {
+            color: var(--danger-color);
+        }
+        
+        /* Email Modal Styles */
+        .email-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .email-modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.4s ease-out;
+        }
+        
+        .email-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.2s;
+        }
+        
+        .email-modal-close:hover {
+            color: #333;
+        }
+        
+        .email-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .email-form-group input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .email-form-group input[type="email"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .email-form-group.error input {
+            border-color: var(--danger-color);
+        }
+        
+        .email-error {
+            color: var(--danger-color);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-left: 35px;
+            cursor: pointer;
+            font-size: 14px;
+            user-select: none;
+        }
+        
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #eee;
+            border-radius: 3px;
+        }
+        
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: var(--primary-color);
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .checkbox-container .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .modal-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .modal-link:hover {
+            text-decoration: underline;
+        }
+        
+        .email-submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .email-submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .email-disclaimer {
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .recommendations-container {
+            margin-top: 30px;
+        }
+        
+        .recommendation-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .recommendation-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .recommendation-content h3 {
+            margin-top: 0;
+            color: var(--dark-bg);
+        }
+        
+        .cta-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .cta-title {
+            font-size: 1.8rem;
+            color: var(--dark-bg);
+            margin-top: 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background-color var(--transition-speed);
+        }
+        
+        .cta-button:hover {
+            background-color: #2980b9;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .control-panel,
+            .stats-container {
+                flex-direction: column;
+            }
+            
+            .visualization-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .email-modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .recommendation-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .recommendation-icon {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Email Scam Analytics</h1>
+        <p class="tagline">Real-time insights and analytics on phishing and scam email trends</p>
+        
+        <div class="nav-links">
+            <a href="heatmap.html" class="primary">View Regional Scam Heatmap</a>
+            <a href="#" id="download-button">Download the Extension</a>
+        </div>
+    </header>
+    
+    <!-- Email Modal -->
+    <div id="email-modal" class="email-modal">
+        <div class="email-modal-content">
+            <span class="email-modal-close">&times;</span>
+            <h2>Almost there!</h2>
+            <p>Please enter your email address to download the Email Scam Protector extension:</p>
+            <form id="download-email-form">
+                <div class="email-form-group" id="email-form-group">
+                    <input type="email" id="modal-email" placeholder="Your email address" required>
+                    <div class="email-error" id="email-error">Please enter a valid email address</div>
+                </div>
+                <div class="email-form-group">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="agree-terms" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#" class="modal-link">Terms of Service</a> and <a href="#" class="modal-link">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="email-submit-btn">Download Extension</button>
+            </form>
+            <p class="email-disclaimer">We respect your privacy and will never share your email with third parties.</p>
+        </div>
+    </div>
+    
+    <div class="control-panel">
+        <div class="control-group">
+            <label class="control-label" for="time-period">Time Period</label>
+            <select id="time-period">
+                <option value="last30">Last 30 Days</option>
+                <option value="last90">Last 90 Days</option>
+                <option value="last180">Last 180 Days</option>
+                <option value="last365">Last 365 Days</option>
+                <option value="custom">Custom Range</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="scam-type">Scam Type</label>
+            <select id="scam-type">
+                <option value="all">All Types</option>
+                <option value="phishing">Phishing</option>
+                <option value="banking">Banking Scams</option>
+                <option value="tech">Tech Support</option>
+                <option value="gift">Gift Card Fraud</option>
+                <option value="lottery">Lottery/Prize</option>
+                <option value="shipping">Shipping Notification</option>
+                <option value="crypto">Cryptocurrency</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="region">Region</label>
+            <select id="region">
+                <option value="global">Global</option>
+                <option value="na">North America</option>
+                <option value="eu">Europe</option>
+                <option value="as">Asia</option>
+                <option value="sa">South America</option>
+                <option value="af">Africa</option>
+                <option value="oc">Oceania</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label" for="update-btn">&nbsp;</label>
+            <button id="update-btn">Update View</button>
+        </div>
+    </div>
+    
+    <div class="filter-tags" id="filter-tags">
+        <!-- Active filters will appear here -->
+    </div>
+    
+    <div class="stats-container">
+        <div class="stat-box" id="stat-detected">
+            <p class="stat-label">Scam Emails Detected</p>
+            <p class="stat-value" data-value="2456789">2.4M+</p>
+            <p><span class="trend-up"><i class="fas fa-arrow-up"></i> 12.4%</span> vs previous period</p>
+        </div>
+        
+        <div class="stat-box" id="stat-risk">
+            <p class="stat-label">Average Risk Score</p>
+            <p class="stat-value" data-value="67.3">67.3</p>
+            <p><span class="trend-down"><i class="fas fa-arrow-down"></i> 3.1%</span> vs previous period</p>
+        </div>
+        
+        <div class="stat-box" id="stat-protection">
+            <p class="stat-label">Protection Rate</p>
+            <p class="stat-value" data-value="98.6">98.6%</p>
+            <p><span class="trend-up"><i class="fas fa-arrow-up"></i> 1.2%</span> vs previous period</p>
+        </div>
+        
+        <div class="stat-box" id="stat-users">
+            <p class="stat-label">Active Users</p>
+            <p class="stat-value" data-value="512000">512K</p>
+            <p><span class="trend-up"><i class="fas fa-arrow-up"></i> 24.5%</span> vs previous period</p>
+        </div>
+    </div>
+    
+    <div class="insights-container">
+        <h3 class="insight-title"><i class="fas fa-lightbulb"></i> Key Insights</h3>
+        <p>Based on the current data, we're seeing a <strong>significant increase in phishing attempts</strong> targeting financial institutions. There's also a new trend of scammers using AI-generated content that's harder to detect. The most affected regions are North America and Western Europe.</p>
+        <p>Recommendation: Enable high-level scanning in your Email Scam Protector settings.</p>
+    </div>
+    
+    <div class="recommendations-container">
+        <h2>Recommendations Based on Current Threats</h2>
+        
+        <div class="recommendation-item">
+            <div class="recommendation-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="recommendation-content">
+                <h3>Enable Advanced Protection</h3>
+                <p>Based on recent attack patterns, we recommend enabling advanced protection in your settings. This will increase scanning sensitivity for AI-generated phishing attempts which have increased by 37% in the last month.</p>
+            </div>
+        </div>
+        
+        <div class="recommendation-item">
+            <div class="recommendation-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="recommendation-content">
+                <h3>Review Banking Email Rules</h3>
+                <p>Financial institution impersonation is currently the #1 threat vector. Create custom rules to flag emails claiming to be from your bank, especially those requesting account verification or containing urgent language.</p>
+            </div>
+        </div>
+        
+        <div class="recommendation-item">
+            <div class="recommendation-icon">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+            <div class="recommendation-content">
+                <h3>Update Your Extension</h3>
+                <p>Ensure you're running the latest version of Email Scam Protector to benefit from our newest detection algorithms trained on the most recent scam patterns and techniques.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cta-container">
+        <h2 class="cta-title">Stay Protected Against the Latest Email Threats</h2>
+        <p>Download our extension today to automatically identify and block sophisticated phishing attempts before they reach your inbox. Our AI-powered protection is continuously learning and adapting to new scam techniques.</p>
+        <a href="#" class="cta-button" id="download-cta-button">Download Email Scam Protector</a>
+    </div>
+    
+    <div class="nav-links">
+        <a href="heatmap.html" class="primary">View Regional Scam Heatmap</a>
+        <a href="#" id="download-extension-bottom">Download Extension</a>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Email Scam Protector. All rights reserved.</p>
+        <p>
+            <a href="#" style="color: #3498db; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+            <a href="#" style="color: #3498db; text-decoration: none; margin: 0 10px;">Terms of Service</a>
+            <a href="#" style="color: #3498db; text-decoration: none; margin: 0 10px;">Contact Us</a>
+        </p>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize download buttons
+            initializeDownloadButtons();
+            
+            // Update button functionality
+            const updateBtn = document.getElementById('update-btn');
+            updateBtn.addEventListener('click', function() {
+                // Get filter values
+                const period = document.getElementById('time-period').value;
+                const scamType = document.getElementById('scam-type').value;
+                const region = document.getElementById('region').value;
+                
+                // Update filter tags
+                updateFilterTags(period, scamType, region);
+                
+                // Update visualizations based on filters
+                updateVisualizations(period, scamType, region);
+                
+                // Show loading animation
+                showLoading();
+            });
+            
+            // Function to initialize download buttons
+            function initializeDownloadButtons() {
+                const downloadButtons = document.querySelectorAll('#download-button, #download-extension-bottom, #download-cta-button');
+                downloadButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log('Download button clicked');
+                        showEmailModal();
+                    });
+                });
+            }
+            
+            // Function to initialize email modal
+            function initializeEmailModal() {
+                const modal = document.getElementById('email-modal');
+                const closeBtn = modal.querySelector('.email-modal-close');
+                
+                // Close button functionality
+                closeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    resetEmailForm();
+                });
+                
+                // Close when clicking outside the modal
+                window.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                        resetEmailForm();
+                    }
+                });
+                
+                // Handle form submission
+                const form = document.getElementById('download-email-form');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get email input and validate it
+                    const emailInput = document.getElementById('modal-email');
+                    const email = emailInput.value;
+                    
+                    // Validate email using a proper regex pattern
+                    if (!validateEmail(email)) {
+                        showEmailError();
+                        return false;
+                    }
+                    
+                    // If validation passes, continue with form submission
+                    hideEmailError();
+                    
+                    // Store email in localStorage
+                    localStorage.setItem('userEmail', email);
+                    console.log('Email saved:', email);
+                    
+                    // Hide modal
+                    modal.style.display = 'none';
+                    resetEmailForm();
+                    
+                    // Redirect to download page
+                    window.location.href = 'download.html';
+                });
+                
+                // Add input validation on change
+                const emailInput = document.getElementById('modal-email');
+                emailInput.addEventListener('input', function() {
+                    if (validateEmail(this.value)) {
+                        hideEmailError();
+                    }
+                });
+            }
+            
+            // Initialize email modal
+            initializeEmailModal();
+            
+            // Function to validate email format
+            function validateEmail(email) {
+                // Regular expression for basic email validation
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return regex.test(email);
+            }
+            
+            // Function to show email validation error
+            function showEmailError() {
+                const emailGroup = document.getElementById('email-form-group');
+                const errorMessage = document.getElementById('email-error');
+                
+                emailGroup.classList.add('error');
+                errorMessage.style.display = 'block';
+            }
+            
+            // Function to hide email validation error
+            function hideEmailError() {
+                const emailGroup = document.getElementById('email-form-group');
+                const errorMessage = document.getElementById('email-error');
+                
+                emailGroup.classList.remove('error');
+                errorMessage.style.display = 'none';
+            }
+            
+            // Function to reset email form
+            function resetEmailForm() {
+                document.getElementById('download-email-form').reset();
+                hideEmailError();
+            }
+            
+            // Function to show email modal
+            function showEmailModal() {
+                console.log('Showing email modal');
+                const modal = document.getElementById('email-modal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                } else {
+                    console.error('Email modal element not found');
+                    alert('Please provide your email to download the extension.');
+                }
+            }
+            
+            // Function to show loading animation
+            function showLoading() {
+                // Create and show loader
+                const loader = document.createElement('div');
+                loader.className = 'loader';
+                loader.innerHTML = '<i class="fas fa-spinner"></i>';
+                
+                document.body.appendChild(loader);
+                loader.style.position = 'fixed';
+                loader.style.display = 'flex';
+                
+                // Hide loader after a short delay
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    setTimeout(() => {
+                        loader.remove();
+                    }, 300);
+                }, 800);
+            }
+            
+            // Function to update visualizations based on filters
+            function updateVisualizations(period, scamType, region) {
+                // Update statistics based on filters
+                updateStatistics(period, scamType, region);
+                
+                // Update insights based on filters
+                updateInsights(period, scamType, region);
+                
+                // Update recommendations based on filters
+                updateRecommendations(period, scamType, region);
+            }
+            
+            // Function to update statistics based on filters
+            function updateStatistics(period, scamType, region) {
+                // Define data variations for different filter combinations
+                const statsVariations = {
+                    // Global data for different time periods
+                    global: {
+                        all: {
+                            last30: {
+                                detected: '2.4M+',
+                                risk: '67.3',
+                                protection: '98.6%',
+                                users: '512K'
+                            },
+                            last90: {
+                                detected: '7.2M+',
+                                risk: '65.8',
+                                protection: '97.5%',
+                                users: '487K'
+                            },
+                            last180: {
+                                detected: '14.8M+',
+                                risk: '62.4',
+                                protection: '96.9%',
+                                users: '452K'
+                            },
+                            last365: {
+                                detected: '28.3M+',
+                                risk: '59.7',
+                                protection: '95.2%',
+                                users: '421K'
+                            }
+                        },
+                        // Add specific scam type data
+                        phishing: {
+                            last30: {
+                                detected: '842K+',
+                                risk: '74.2',
+                                protection: '99.1%',
+                                users: '512K'
+                            },
+                            last90: {
+                                detected: '2.5M+',
+                                risk: '72.8',
+                                protection: '98.3%',
+                                users: '487K'
+                            }
+                        },
+                        banking: {
+                            last30: {
+                                detected: '451K+',
+                                risk: '82.7',
+                                protection: '99.4%',
+                                users: '512K'
+                            },
+                            last90: {
+                                detected: '1.3M+',
+                                risk: '81.5',
+                                protection: '98.8%',
+                                users: '487K'
+                            }
+                        },
+                        tech: {
+                            last30: {
+                                detected: '312K+',
+                                risk: '65.8',
+                                protection: '97.2%',
+                                users: '512K'
+                            }
+                        },
+                        crypto: {
+                            last30: {
+                                detected: '172K+',
+                                risk: '79.4',
+                                protection: '98.7%',
+                                users: '512K'
+                            }
+                        }
+                    },
+                    // North America data for different time periods
+                    na: {
+                        all: {
+                            last30: {
+                                detected: '1.1M+',
+                                risk: '72.6',
+                                protection: '99.1%',
+                                users: '245K'
+                            },
+                            last90: {
+                                detected: '3.4M+',
+                                risk: '70.2',
+                                protection: '98.7%',
+                                users: '231K'
+                            },
+                            last180: {
+                                detected: '6.9M+',
+                                risk: '68.5',
+                                protection: '97.3%',
+                                users: '218K'
+                            },
+                            last365: {
+                                detected: '13.5M+',
+                                risk: '65.8',
+                                protection: '96.8%',
+                                users: '201K'
+                            }
+                        },
+                        phishing: {
+                            last30: {
+                                detected: '412K+',
+                                risk: '77.3',
+                                protection: '99.3%',
+                                users: '245K'
+                            }
+                        }
+                    },
+                    // Europe data for different time periods
+                    eu: {
+                        all: {
+                            last30: {
+                                detected: '0.8M+',
+                                risk: '65.9',
+                                protection: '97.8%',
+                                users: '187K'
+                            },
+                            last90: {
+                                detected: '2.5M+',
+                                risk: '63.7',
+                                protection: '96.9%',
+                                users: '172K'
+                            },
+                            last180: {
+                                detected: '4.9M+',
+                                risk: '61.3',
+                                protection: '95.7%',
+                                users: '158K'
+                            },
+                            last365: {
+                                detected: '9.6M+',
+                                risk: '58.2',
+                                protection: '94.3%',
+                                users: '142K'
+                            }
+                        }
+                    }
+                };
+                
+                // Get the relevant data based on region, scam type, and period
+                let data;
+                
+                // Navigate through the nested objects to find the right data
+                if (statsVariations[region] && 
+                    statsVariations[region][scamType] && 
+                    statsVariations[region][scamType][period]) {
+                    // We have data for this exact combination
+                    data = statsVariations[region][scamType][period];
+                } else if (statsVariations[region] && 
+                           statsVariations[region].all && 
+                           statsVariations[region].all[period]) {
+                    // Fall back to "all" scam types for this region and period
+                    data = statsVariations[region].all[period];
+                } else if (statsVariations.global[scamType] && 
+                           statsVariations.global[scamType][period]) {
+                    // Fall back to global data for this scam type and period
+                    data = statsVariations.global[scamType][period];
+                } else if (statsVariations.global.all[period]) {
+                    // Fall back to global data for all scam types and this period
+                    data = statsVariations.global.all[period];
+                } else {
+                    // Default fallback
+                    data = statsVariations.global.all.last30;
+                }
+                
+                // Update the statistics
+                document.querySelector('#stat-detected .stat-value').textContent = data.detected;
+                document.querySelector('#stat-risk .stat-value').textContent = data.risk;
+                document.querySelector('#stat-protection .stat-value').textContent = data.protection;
+                document.querySelector('#stat-users .stat-value').textContent = data.users;
+            }
+            
+            // Function to update insights based on filters
+            function updateInsights(period, scamType, region) {
+                // Different insights for different combinations
+                const insights = {
+                    default: "Based on the current data, we're seeing a <strong>significant increase in phishing attempts</strong> targeting financial institutions. There's also a new trend of scammers using AI-generated content that's harder to detect. The most affected regions are North America and Western Europe.",
+                    phishing: "Phishing attempts have increased by <strong>32%</strong> in the selected period. These attacks are becoming more sophisticated, with attackers creating convincing replicas of legitimate websites. Banking, cloud services, and e-commerce are the most targeted sectors.",
+                    banking: "Banking scams now account for <strong>19.3%</strong> of all detected threats. We're seeing more sophisticated social engineering techniques combined with technical exploits to target financial information. Mobile banking users are particularly vulnerable.",
+                    tech: "Tech support scams have decreased by <strong>5%</strong> overall but are becoming more targeted. Scammers are now using detailed technical information and specific company knowledge to appear more legitimate. Older users remain the primary targets.",
+                    gift: "Gift card fraud has remained relatively stable, accounting for <strong>9.3%</strong> of scams. However, we're seeing new techniques where scammers impersonate specific employees within organizations to request gift card purchases.",
+                    crypto: "Cryptocurrency scams have surged by <strong>46%</strong> in the selected period. These increasingly use sophisticated fake investment platforms with real-time charts and fake testimonials. They primarily target experienced crypto users rather than beginners.",
+                    na: "North America is experiencing a surge in AI-generated phishing emails that bypass traditional spam filters. These emails are <strong>41% more likely</strong> to contain malware attachments compared to other regions. Targeted spear-phishing against executives has increased by 27%.",
+                    eu: "European users are facing increased regulatory compliance scams related to GDPR and other privacy laws. These scams account for <strong>23% of all phishing attempts</strong> in the region. We've also observed a rise in multi-language attacks targeting users across different EU countries.",
+                    last180: "Over the past 6 months, we've detected a <strong>shift in scammer tactics</strong> toward more personalized attacks. Data from breached services is being used to create highly convincing scam emails with personal details. Cryptocurrency scams have increased by 34% during this period."
+                };
+                
+                // Choose the appropriate insight based on filters
+                let insightText = insights.default;
+                if (scamType !== 'all' && insights[scamType]) {
+                    insightText = insights[scamType];
+                } else if (region !== 'global' && insights[region]) {
+                    insightText = insights[region];
+                } else if (insights[period]) {
+                    insightText = insights[period];
+                }
+                
+                // Update the insights text
+                document.querySelector('.insights-container p:first-of-type').innerHTML = insightText;
+            }
+            
+            // Function to update recommendations based on filters
+            function updateRecommendations(period, scamType, region) {
+                // Different recommendations for different filter combinations
+                const recommendations = {
+                    phishing: {
+                        title: "Update Email Authentication",
+                        icon: "fas fa-lock",
+                        content: "Enable DMARC, SPF, and DKIM email authentication to verify sender legitimacy and reduce spoofing attacks."
+                    },
+                    banking: {
+                        title: "Create Financial Alert Rules",
+                        icon: "fas fa-money-bill-wave",
+                        content: "Set up custom rules to flag emails mentioning financial terms, account numbers, or requesting immediate action."
+                    },
+                    tech: {
+                        title: "Block Tech Support Keywords",
+                        icon: "fas fa-headset",
+                        content: "Create rules to block emails containing technical support terms combined with urgent requests or remote access software mentions."
+                    },
+                    gift: {
+                        title: "Implement Executive Impersonation Filters",
+                        icon: "fas fa-user-tie",
+                        content: "Create rules to flag emails claiming to be from executives or managers with requests for gift card purchases or urgent payments."
+                    },
+                    crypto: {
+                        title: "Block Cryptocurrency Keywords",
+                        icon: "fas fa-coins",
+                        content: "Add cryptocurrency-related terms to your custom keyword blocklist to filter out the growing number of crypto investment scams."
+                    },
+                    na: {
+                        title: "Watch for Tax Scams",
+                        icon: "fas fa-file-invoice-dollar",
+                        content: "North American users should be especially vigilant about tax-related phishing attempts which increase during tax filing seasons."
+                    },
+                    eu: {
+                        title: "Monitor GDPR Compliance Scams",
+                        icon: "fas fa-clipboard-check",
+                        content: "European users should watch for fake compliance notifications that exploit GDPR and other regulations to create urgency."
+                    }
+                };
+                
+                // Choose a custom recommendation if available
+                let customRec = null;
+                if (scamType !== 'all' && recommendations[scamType]) {
+                    customRec = recommendations[scamType];
+                } else if (region !== 'global' && recommendations[region]) {
+                    customRec = recommendations[region];
+                }
+                
+                // Update the first recommendation if we have a custom one
+                if (customRec) {
+                    const firstRec = document.querySelector('.recommendation-item');
+                    const icon = firstRec.querySelector('.recommendation-icon i');
+                    const title = firstRec.querySelector('h3');
+                    const content = firstRec.querySelector('p');
+                    
+                    icon.className = customRec.icon;
+                    title.textContent = customRec.title;
+                    content.textContent = customRec.content;
+                }
+            }
+            
+            // Function to update filter tags
+            function updateFilterTags(period, scamType, region) {
+                const filterTags = document.getElementById('filter-tags');
+                filterTags.innerHTML = '';
+                
+                // Time period tag
+                let periodText = '';
+                switch(period) {
+                    case 'last30': periodText = 'Last 30 Days'; break;
+                    case 'last90': periodText = 'Last 90 Days'; break;
+                    case 'last180': periodText = 'Last 180 Days'; break;
+                    case 'last365': periodText = 'Last 365 Days'; break;
+                    case 'custom': periodText = 'Custom Range'; break;
+                }
+                
+                addFilterTag(filterTags, 'Period: ' + periodText);
+                
+                // Scam type tag
+                if (scamType !== 'all') {
+                    let scamText = '';
+                    switch(scamType) {
+                        case 'phishing': scamText = 'Phishing'; break;
+                        case 'banking': scamText = 'Banking Scams'; break;
+                        case 'tech': scamText = 'Tech Support'; break;
+                        case 'gift': scamText = 'Gift Card Fraud'; break;
+                        case 'lottery': scamText = 'Lottery/Prize'; break;
+                        case 'shipping': scamText = 'Shipping Notification'; break;
+                        case 'crypto': scamText = 'Cryptocurrency'; break;
+                    }
+                    
+                    addFilterTag(filterTags, 'Type: ' + scamText);
+                }
+                
+                // Region tag
+                if (region !== 'global') {
+                    let regionText = '';
+                    switch(region) {
+                        case 'na': regionText = 'North America'; break;
+                        case 'eu': regionText = 'Europe'; break;
+                        case 'as': regionText = 'Asia'; break;
+                        case 'sa': regionText = 'South America'; break;
+                        case 'af': regionText = 'Africa'; break;
+                        case 'oc': regionText = 'Oceania'; break;
+                    }
+                    
+                    addFilterTag(filterTags, 'Region: ' + regionText);
+                }
+            }
+            
+            // Function to add a filter tag
+            function addFilterTag(container, text) {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `${text} <i class="fas fa-times"></i>`;
+                
+                // Add remove functionality
+                tag.querySelector('i').addEventListener('click', function() {
+                    tag.remove();
+                });
+                
+                container.appendChild(tag);
+            }
+            
+            // Initialize the page with default filters
+            updateFilterTags('last30', 'all', 'global');
+        });
+    </script>
+</body>
+</html>
