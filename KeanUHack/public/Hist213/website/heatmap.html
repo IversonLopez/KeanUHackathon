@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Union County Scam Risk Map - AI Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f1f3f4;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #1a73e8;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #1557b0;
+        }
+
+        .color-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+
+        .city-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .city-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #ddd;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .city-item:hover {
+            background-color: #e8eaed;
+        }
+
+        .city-name {
+            font-weight: 500;
+        }
+
+        .city-risk {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .risk-very-low { background-color: #2ecc71; }
+        .risk-low { background-color: #27ae60; }
+        .risk-moderate { background-color: #f39c12; }
+        .risk-high { background-color: #e74c3c; }
+        .risk-very-high { background-color: #c0392b; }
+
+        .map-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .city-details {
+            padding: 20px;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .city-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .city-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .overall-rate {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .rate-value {
+            display: inline-block;
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            border-radius: 4px;
+            color: white;
+            margin-left: 5px;
+        }
+
+        .data-section {
+            margin-bottom: 20px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .data-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .card-value {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            margin-top: 5px;
+            height: 5px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-value {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .analysis {
+            line-height: 1.6;
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1a73e8;
+        }
+
+        .recommendations {
+            margin-top: 15px;
+        }
+
+        .recommendations ul {
+            padding-left: 20px;
+        }
+
+        .recommendations li {
+            margin-bottom: 5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            padding: 10px;
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a73e8;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .api-status {
+            background-color: #e0f7fa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background-color: #2ecc71;
+        }
+
+        .status-offline {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div>Loading AI analysis and map data...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Union County Scam Risk Map</h1>
+            <div class="subtitle">AI-Powered Analysis of Scam Rates in Union County, New Jersey</div>
+        </header>
+
+        <div class="info-bar">
+            <div>Current Date and Time (UTC): <span id="current-time">2025-03-22 18:00:55</span></div>
+            <div>Current User: <span id="current-user">Nazib65</span></div>
+        </div>
+
+        <div class="dashboard">
+            <div class="controls">
+                <div class="control-section">
+                    <div class="section-title">Navigation</div>
+                    <select id="city-select">
+                        <option value="">-- Select a city --</option>
+                        <!-- Cities will be added here dynamically -->
+                    </select>
+                    <button onclick="zoomToSelectedCity()">Go to City</button>
+                    <button onclick="showAllCities()">Show All Cities</button>
+
+                    <div id="api-status" class="api-status">
+                        <div class="status-indicator status-offline"></div>
+                        <div>Checking API connection...</div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">Map Display Options</div>
+                    <button id="toggle-heatmap" onclick="toggleHeatmap()">Show Heatmap</button>
+                    <button id="toggle-markers" onclick="toggleMarkers()">Hide Markers</button>
+
+                    <div class="section-title" style="margin-top: 15px;">Scam Risk Legend</div>
+                    <div class="color-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #2ecc71;"></div>
+                            <div>Very Low Risk (0-20)</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #27ae60;"></div>
+                            <div>Low Risk (20-40)</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #f39c12;"></div>
+                            <div>Moderate Risk (40-60)</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #e74c3c;"></div>
+                            <div>High Risk (60-80)</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #c0392b;"></div>
+                            <div>Very High Risk (80-100)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">Cities by Risk Level</div>
+                    <div class="city-list" id="city-list">
+                        <!-- City list will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="city-details" id="city-details">
+                    <p>Select a city from the dropdown or click a marker on the map to see AI-powered scam risk analysis.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This application combines geographic mapping with AI analysis to provide insights on scam risks in Union County, NJ.</p>
+            <p>Data is generated using a machine learning model trained on synthetic data for educational purposes.</p>
+            <p>© 2025 Nazib65 - AI Scam Risk Analysis Tool</p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let map;
+        let markers = [];
+        let infoWindow;
+        let heatmap;
+        let cityData = [];
+        let markersVisible = true;
+        let heatmapVisible = false;
+        const apiBaseUrl = 'http://localhost:5000/api'; // Python Flask API port
+
+        // Initialize date and user info
+        document.getElementById('current-time').textContent = "2025-03-22 18:00:55";
+        document.getElementById('current-user').textContent = "Nazib65";
+
+        // Initialize the map
+        function initMap() {
+            // Center on Union County, NJ
+            const unionCountyCenter = { lat: 40.6806, lng: -74.2990 };
+
+            // Create the map
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: unionCountyCenter,
+                zoom: 11,
+                mapTypeControl: true,
+                fullscreenControl: true,
+                streetViewControl: true,
+                zoomControl: true,
+                styles: [
+                    {
+                        "featureType": "poi",
+                        "stylers": [{ "visibility": "off" }]
+                    }
+                ]
+            });
+
+            // Create a shared info window
+            infoWindow = new google.maps.InfoWindow();
+
+            // Add a boundary for Union County
+            const unionCountyCoords = [
+                { lat: 40.5699, lng: -74.4428 }, // SW
+                { lat: 40.5699, lng: -74.2107 }, // SE
+                { lat: 40.7356, lng: -74.2107 }, // NE
+                { lat: 40.7356, lng: -74.4428 }  // NW
+            ];
+
+            const unionCountyBoundary = new google.maps.Polygon({
+                paths: unionCountyCoords,
+                strokeColor: "#1a73e8",
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: "#1a73e8",
+                fillOpacity: 0.1
+            });
+
+            unionCountyBoundary.setMap(map);
+
+            // Check API status
+            checkApiStatus();
+
+            // Fetch AI scam data
+            fetchScamData();
+        }
+
+        // Check API status
+        function checkApiStatus() {
+            fetch(`${apiBaseUrl}/status`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API unavailable');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const statusIndicator = document.querySelector('.status-indicator');
+                    statusIndicator.classList.remove('status-offline');
+                    statusIndicator.classList.add('status-online');
+
+                    document.getElementById('api-status').innerHTML = `
+                        <div class="status-indicator status-online"></div>
+                        <div>AI Analysis API: Online (${data.data_source} data)</div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('API status check failed:', error);
+                    document.getElementById('api-status').innerHTML = `
+                        <div class="status-indicator status-offline"></div>
+                        <div>AI Analysis API: Offline (using fallback data)</div>
+                    `;
+                });
+        }
+
+        // Fetch scam data from AI API
+        function fetchScamData() {
+            fetch(`${apiBaseUrl}/scam-data`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    cityData = data;
+                    processScamData();
+                    document.getElementById('loading').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    // Fallback to simulated data
+                    simulateScamData();
+                });
+        }
+
+        // Simulate AI scam data (fallback)
+        function simulateScamData() {
+            console.log('Using simulated data (API unavailable)');
+
+            // Simulate API call delay
+            setTimeout(() => {
+                cityData = [
+                    {
+                        "city": "Elizabeth",
+                        "scam_rate": 78.4,
+                        "risk_level": "High",
+                        "categories": {
+                            "phone": 82.6,
+                            "email": 74.2,
+                            "text": 76.9,
+                            "in_person": 73.1,
+                            "social media": 79.5
+                        },
+                        "population": 129216,
+                        "analysis": "Elizabeth has a high scam risk with an overall scam rate of 78.4/100. Residents should exercise high caution, particularly with phone scams, which show the highest rate (82.6/100). The diverse urban population may be targeted by various types of scams."
+                    },
+                    {
+                        "city": "Plainfield",
+                        "scam_rate": 71.2,
+                        "risk_level": "High",
+                        "categories": {
+                            "phone": 73.8,
+                            "email": 68.5,
+                            "text": 74.1,
+                            "in_person": 69.7,
+                            "social_media": 71.9
+                        },
+                        "population": 50588,
+                        "analysis": "Plainfield has a high scam risk with an overall scam rate of 71.2/100. The most common scam type is text (74.1/100), which residents should be particularly watchful for. The community may benefit from increased awareness programs."
+                    },
+                    {
+                        "city": "Union Township",
+                        "scam_rate": 56.7,
+                        "risk_level": "Moderate",
+                        "categories": {
+                            "phone": 61.2,
+                            "email": 54.8,
+                            "text": 58.3,
+                            "in_person": 51.9,
+                            "social_media": 57.4
+                        },
+                        "population": 58515,
+                        "analysis": "Union Township has a moderate scam risk with an overall scam rate of 56.7/100. The most common scam type is phone (61.2/100), while in-person scams are less prevalent (51.9/100). Residents should maintain general awareness of potential scam attempts."
+                    },
+                    {
+                        "city": "Westfield",
+                        "scam_rate": 38.9,
+                        "risk_level": "Low",
+                        "categories": {
+                            "phone": 42.3,
+                            "email": 41.5,
+                            "text": 36.7,
+                            "in_person": 32.8,
+                            "social_media": 38.2
+                        },
+                        "population": 30316,
+                        "analysis": "Westfield has a low scam risk with an overall scam rate of 38.9/100. While the overall risk is low, residents should still be cautious about phone scams (42.3/100). Higher median income may make this area a target for sophisticated financial scams."
+                    },
+                    {
+                        "city": "Linden",
+                        "scam_rate": 62.8,
+                        "risk_level": "High",
+                        "categories": {
+                            "phone": 67.1,
+                            "email": 60.4,
+                            "text": 64.9,
+                            "in_person": 58.7,
+                            "social_media": 61.5
+                        },
+                        "population": 42474,
+                        "analysis": "Linden has a high scam risk with an overall scam rate of 62.8/100. Residents should exercise high caution, particularly with phone scams, which show the highest rate (67.1/100). The industrial nature of parts of the city may lead to specific targeting with employment scams."
+                    },
+                    {
+                        "city": "Rahway",
+                        "scam_rate": 59.6,
+                        "risk_level": "Moderate",
+                        "categories": {
+                            "phone": 63.4,
+                            "email": 57.2,
+                            "text": 61.8,
+                            "in_person": 56.1,
+                            "social_media": 60.5
+                        },
+                        "population": 29644,
+                        "analysis": "Rahway has a moderate scam risk with an overall scam rate of 59.6/100. The most common scam type is phone (63.4/100), while email scams are less prevalent (57.2/100). The diverse community may benefit from multilingual scam awareness campaigns."
+                    },
+                    {
+                        "city": "Summit",
+                        "scam_rate": 32.5,
+                        "risk_level": "Low",
+                        "categories": {
+                            "phone": 35.9,
+                            "email": 37.8,
+                            "text": 29.7,
+                            "in_person": 26.4,
+                            "social_media": 31.8
+                        },
+                        "population": 21913,
+                        "analysis": "Summit has a low scam risk with an overall scam rate of 32.5/100. While the overall risk is low, residents should still be cautious about email scams (37.8/100). Higher median income may make this area a target for sophisticated financial scams."
+                    },
+                    {
+                        "city": "Cranford",
+                        "scam_rate": 42.7,
+                        "risk_level": "Moderate",
+                        "categories": {
+                            "phone": 46.3,
+                            "email": 44.9,
+                            "text": 39.5,
+                            "in_person": 37.8,
+                            "social_media": 43.6
+                        },
+                        "population": 23847,
+                        "analysis": "Cranford has a moderate scam risk with an overall scam rate of 42.7/100. The most common scam type is phone (46.3/100), while in-person scams are less prevalent (37.8/100). The community should focus on awareness and education about common scam tactics."
+                    },
+                    {
+                        "city": "Hillside",
+                        "scam_rate": 68.3,
+                        "risk_level": "High",
+                        "categories": {
+                            "phone": 72.1,
+                            "email": 65.9,
+                            "text": 70.4,
+                            "in_person": 63.7,
+                            "social_media": 67.5
+                        },
+                        "population": 21747,
+                        "analysis": "Hillside has a high scam risk with an overall scam rate of 68.3/100. Residents should exercise high caution, particularly with phone scams, which show the highest rate (72.1/100). The diverse population may benefit from targeted awareness campaigns."
+                    },
+                    {
+                        "city": "Berkeley Heights",
+                        "scam_rate": 29.7,
+                        "risk_level": "Low",
+                        "categories": {
+                            "phone": 33.2,
+                            "email": 34.5,
+                            "text": 27.3,
+                            "in_person": 24.1,
+                            "social_media": 28.6
+                        },
+                        "population": 13183,
+                        "analysis": "Berkeley Heights has a low scam risk with an overall scam rate of 29.7/100. While the overall risk is low, residents should still be cautious about email scams (34.5/100). Higher median income may make this area a target for sophisticated financial scams."
+                    }
+                ];
+
+                // Process the data
+                processScamData();
+
+                // Hide loading screen
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+        }
+
+        // Process scam data and update the map
+        function processScamData() {
+            // Sort cities by risk for the list
+            const sortedCities = [...cityData].sort((a, b) => b.scam_rate - a.scam_rate);
+
+            // Populate the dropdown
+            const dropdown = document.getElementById('city-select');
+            const cityList = document.getElementById('city-list');
+
+            // Clear existing options
+            dropdown.innerHTML = '<option value="">-- Select a city --</option>';
+            cityList.innerHTML = '';
+
+            // Add cities to dropdown and list
+            sortedCities.forEach(city => {
+                // Add to dropdown
+                const option = document.createElement('option');
+                option.value = city.city;
+                option.textContent = `${city.city} (${city.risk_level} Risk)`;
+                dropdown.appendChild(option);
+
+                // Add to city list
+                const cityItem = document.createElement('div');
+                cityItem.className = 'city-item';
+                cityItem.onclick = () => selectCity(city.city);
+
+                const riskClass = getRiskClass(city.risk_level);
+
+                cityItem.innerHTML = `
+                    <div class="city-name">${city.city}</div>
+                    <div class="city-risk ${riskClass}">${city.risk_level}</div>
+                `;
+
+                cityList.appendChild(cityItem);
+            });
+
+            // Add markers to the map
+            addCityMarkers();
+
+            // Create heatmap data
+            createHeatmap();
+        }
+
+        // Add markers for cities
+        function addCityMarkers() {
+            // City locations
+            const cityLocations = {
+                "Elizabeth": { lat: 40.6639, lng: -74.2107 },
+                "Plainfield": { lat: 40.6337, lng: -74.4074 },
+                "Union Township": { lat: 40.6934, lng: -74.2632 },
+                "Westfield": { lat: 40.6517, lng: -74.3473 },
+                "Linden": { lat: 40.6220, lng: -74.2446 },
+                "Rahway": { lat: 40.6076, lng: -74.2771 },
+                "Summit": { lat: 40.7146, lng: -74.3646 },
+                "Cranford": { lat: 40.6584, lng: -74.3032 },
+                "Hillside": { lat: 40.6962, lng: -74.2307 },
+                "Roselle": { lat: 40.6512, lng: -74.2607 },
+                "Berkeley Heights": { lat: 40.6787, lng: -74.4329 },
+                "Clark": { lat: 40.6190, lng: -74.3098 },
+                "Roselle Park": { lat: 40.6637, lng: -74.2671 },
+                "New Providence": { lat: 40.6981, lng: -74.4018 },
+                "Scotch Plains": { lat: 40.6515, lng: -74.3890 },
+                "Fanwood": { lat: 40.6423, lng: -74.3879 },
+                "Garwood": { lat: 40.6534, lng: -74.3207 },
+                "Kenilworth": { lat: 40.6795, lng: -74.2910 },
+                "Mountainside": { lat: 40.6809, lng: -74.3601 },
+                "Springfield": { lat: 40.6998, lng: -74.3315 },
+                "Winfield": { lat: 40.6262, lng: -74.2827 }
+            };
+
+            // Clear existing markers
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            // Add new markers
+            cityData.forEach(city => {
+                const location = cityLocations[city.city];
+                if (!location) return;
+
+                // Determine marker color based on risk level
+                const markerColor = getMarkerColor(city.risk_level);
+
+                // Create marker
+                const marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: city.city,
+                    animation: google.maps.Animation.DROP,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: markerColor,
+                        fillOpacity: 0.9,
+                        strokeWeight: 1,
+                        strokeColor: "#ffffff",
+                        scale: 10
+                    }
+                });
+
+                // Add click event
+                marker.addListener('click', () => {
+                    selectCity(city.city);
+                });
+
+                // Store marker
+                markers.push(marker);
+            });
+        }
+
+        // Create heatmap
+        function createHeatmap() {
+            // City locations with risk weights
+            const heatmapData = [];
+
+            // City locations
+            const cityLocations = {
+                "Elizabeth": { lat: 40.6639, lng: -74.2107 },
+                "Plainfield": { lat: 40.6337, lng: -74.4074 },
+                "Union Township": { lat: 40.6934, lng: -74.2632 },
+                "Westfield": { lat: 40.6517, lng: -74.3473 },
+                "Linden": { lat: 40.6220, lng: -74.2446 },
+                "Rahway": { lat: 40.6076, lng: -74.2771 },
+                "Summit": { lat: 40.7146, lng: -74.3646 },
+                "Cranford": { lat: 40.6584, lng: -74.3032 },
+                "Hillside": { lat: 40.6962, lng: -74.2307 },
+                "Roselle": { lat: 40.6512, lng: -74.2607 },
+                "Berkeley Heights": { lat: 40.6787, lng: -74.4329 },
+                "Clark": { lat: 40.6190, lng: -74.3098 },
+                "Roselle Park": { lat: 40.6637, lng: -74.2671 },
+                "New Providence": { lat: 40.6981, lng: -74.4018 },
+                "Scotch Plains": { lat: 40.6515, lng: -74.3890 },
+                "Fanwood": { lat: 40.6423, lng: -74.3879 },
+                "Garwood": { lat: 40.6534, lng: -74.3207 },
+                "Kenilworth": { lat: 40.6795, lng: -74.2910 },
+                "Mountainside": { lat: 40.6809, lng: -74.3601 },
+                "Springfield": { lat: 40.6998, lng: -74.3315 },
+                "Winfield": { lat: 40.6262, lng: -74.2827 }
+            };
+
+            // Add data points
+            cityData.forEach(city => {
+                const location = cityLocations[city.city];
+                if (!location) return;
+
+                // Create data point with weight based on scam rate
+                heatmapData.push({
+                    location: new google.maps.LatLng(location.lat, location.lng),
+                    weight: city.scam_rate / 10  // Normalize for heatmap
+                });
+
+                // Add some extra points around higher risk areas for better visualization
+                if (city.scam_rate > 60) {
+                    // Add 5 points around high-risk cities
+                    for (let i = 0; i < 5; i++) {
+                        const latOffset = (Math.random() - 0.5) * 0.01;
+                        const lngOffset = (Math.random() - 0.5) * 0.01;
+
+                        heatmapData.push({
+                            location: new google.maps.LatLng(
+                                location.lat + latOffset,
+                                location.lng + lngOffset
+                            ),
+                            weight: city.scam_rate / 15
+                        });
+                    }
+                }
+            });
+
+            // Create heatmap layer
+            heatmap = new google.maps.visualization.HeatmapLayer({
+                data: heatmapData,
+                map: null,  // Initially hidden
+                radius: 20,
+                opacity: 0.7,
+                gradient: [
+                    'rgba(0, 255, 255, 0)',
+                    'rgba(0, 255, 255, 1)',
+                    'rgba(0, 191, 255, 1)',
+                    'rgba(0, 127, 255, 1)',
+                    'rgba(0, 63, 255, 1)',
+                    'rgba(0, 0, 255, 1)',
+                    'rgba(0, 0, 223, 1)',
+                    'rgba(0, 0, 191, 1)',
+                    'rgba(0, 0, 159, 1)',
+                    'rgba(0, 0, 127, 1)',
+                    'rgba(63, 0, 91, 1)',
+                    'rgba(127, 0, 63, 1)',
+                    'rgba(191, 0, 31, 1)',
+                    'rgba(255, 0, 0, 1)'
+                ]
+            });
+        }
+
+        // Toggle heatmap visibility
+        function toggleHeatmap() {
+            heatmapVisible = !heatmapVisible;
+            heatmap.setMap(heatmapVisible ? map : null);
+
+            document.getElementById('toggle-heatmap').textContent =
+                heatmapVisible ? 'Hide Heatmap' : 'Show Heatmap';
+        }
+
+        // Toggle markers visibility
+        function toggleMarkers() {
+            markersVisible = !markersVisible;
+
+            markers.forEach(marker => {
+                marker.setVisible(markersVisible);
+            });
+
+            document.getElementById('toggle-markers').textContent =
+                markersVisible ? 'Hide Markers' : 'Show Markers';
+        }
+
+        // Select a city
+        function selectCity(cityName) {
+            const cityInfo = cityData.find(city => city.city === cityName);
+            if (!cityInfo) return;
+
+            // City locations (same as above)
+            const cityLocations = {
+                "Elizabeth": { lat: 40.6639, lng: -74.2107 },
+                "Plainfield": { lat: 40.6337, lng: -74.4074 },
+                "Union Township": { lat: 40.6934, lng: -74.2632 },
+                "Westfield": { lat: 40.6517, lng: -74.3473 },
+                "Linden": { lat: 40.6220, lng: -74.2446 },
+                "Rahway": { lat: 40.6076, lng: -74.2771 },
+                "Summit": { lat: 40.7146, lng: -74.3646 },
+                "Cranford": { lat: 40.6584, lng: -74.3032 },
+                "Hillside": { lat: 40.6962, lng: -74.2307 },
+                "Roselle": { lat: 40.6512, lng: -74.2607 },
+                "Berkeley Heights": { lat: 40.6787, lng: -74.4329 },
+                "Clark": { lat: 40.6190, lng: -74.3098 },
+                "Roselle Park": { lat: 40.6637, lng: -74.2671 },
+                "New Providence": { lat: 40.6981, lng: -74.4018 },
+                "Scotch Plains": { lat: 40.6515, lng: -74.3890 },
+                "Fanwood": { lat: 40.6423, lng: -74.3879 },
+                "Garwood": { lat: 40.6534, lng: -74.3207 },
+                "Kenilworth": { lat: 40.6795, lng: -74.2910 },
+                "Mountainside": { lat: 40.6809, lng: -74.3601 },
+                "Springfield": { lat: 40.6998, lng: -74.3315 },
+                "Winfield": { lat: 40.6262, lng: -74.2827 }
+            };
+
+            // Get city location
+            const location = cityLocations[cityName];
+            if (!location) return;
+
+            // Center map on city
+            map.setCenter(location);
+            map.setZoom(14);
+
+            // Update dropdown selection
+            document.getElementById('city-select').value = cityName;
+
+            // Get detailed city info from API or use current info
+            fetchCityDetail(cityName, cityInfo);
+        }
+
+        // Fetch detailed city info
+        function fetchCityDetail(cityName, fallbackData) {
+            fetch(`${apiBaseUrl}/city/${encodeURIComponent(cityName)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateCityDetails(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching city details:', error);
+                    // Use fallback data and generate recommendations
+                    updateCityDetails({
+                        ...fallbackData,
+                        safety_recommendations: generateSafetyRecommendations(fallbackData)
+                    });
+                });
+        }
+
+        // Generate safety recommendations for fallback mode
+        function generateSafetyRecommendations(cityInfo) {
+            const recommendations = [
+                "Verify the identity of anyone requesting personal information",
+                "Never send money to people you haven't met in person",
+                "Be cautious of urgent requests or high-pressure tactics"
+            ];
+
+            // Add category-specific recommendations
+            if (cityInfo.categories.phone > 60) {
+                recommendations.push("Be wary of unsolicited phone calls claiming to be from government agencies");
+            }
+            if (cityInfo.categories.email > 60) {
+                recommendations.push("Use email filtering and never click suspicious links");
+            }
+            if (cityInfo.categories.text > 60) {
+                recommendations.push("Don't respond to text messages requesting personal information");
+            }
+            if (cityInfo.categories.in_person > 60) {
+                recommendations.push("Ask for identification from anyone claiming to represent a company");
+            }
+            if (cityInfo.categories.social_media > 60) {
+                recommendations.push("Be cautious of friend requests or messages from unknown people");
+            }
+
+            return recommendations;
+        }
+
+        // Zoom to selected city
+        function zoomToSelectedCity() {
+            const selectedCity = document.getElementById('city-select').value;
+            if (!selectedCity) {
+                alert('Please select a city from the dropdown');
+                return;
+            }
+
+            selectCity(selectedCity);
+        }
+
+        // Show all cities
+        function showAllCities() {
+            // Center on Union County
+            map.setCenter({ lat: 40.6806, lng: -74.2990 });
+            map.setZoom(11);
+
+            // Find cities with highest and lowest risk
+            const sortedCities = [...cityData].sort((a, b) => b.scam_rate - a.scam_rate);
+            const highRiskCities = sortedCities.slice(0, 3);
+            const lowRiskCities = sortedCities.slice(-3).reverse();
+
+            // Update city details to show county overview
+            const cityDetails = document.getElementById('city-details');
+            cityDetails.innerHTML = `
+                <h3>Union County Scam Risk Overview</h3>
+                <div class="analysis">
+                    <p>AI analysis indicates varying levels of scam risk across Union County's municipalities.
+                    Cities with the highest risk include ${highRiskCities.map(c => `${c.city} (${c.scam_rate.toFixed(1)}/100)`).join(', ')}.</p>
+
+                    <p>Cities with the lowest risk include ${lowRiskCities.map(c => `${c.city} (${c.scam_rate.toFixed(1)}/100)`).join(', ')}.</p>
+
+                    <p>Phone scams are the most common across the county, followed by text message and email scams.
+                    Select a specific city to see detailed risk analysis.</p>
+                </div>
+
+                <div class="data-section">
+                    <h3>County-wide Recommendations</h3>
+                    <ul>
+                        <li>Always verify the identity of callers claiming to be from government agencies or financial institutions</li>
+                        <li>Never share personal information or send money to unverified contacts</li>
+                        <li>Be cautious of high-pressure tactics or urgent requests</li>
+                        <li>Report suspected scams to local police and the FTC at ReportFraud.ftc.gov</li>
+                        <li>Use call-blocking apps and email filters to reduce unwanted communications</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Update city details panel
+        function updateCityDetails(cityInfo) {
+            const cityDetails = document.getElementById('city-details');
+
+            // Get risk color
+            const riskColor = getMarkerColor(cityInfo.risk_level);
+
+            // Create content
+            cityDetails.innerHTML = `
+                <div class="city-header">
+                    <h2>${cityInfo.city}</h2>
+                    <div class="overall-rate">
+                        Risk Level: <span class="rate-value" style="background-color: ${riskColor};">${cityInfo.risk_level}</span>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <h3>AI-Generated Risk Analysis</h3>
+                    <div class="analysis">
+                        ${cityInfo.analysis}
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <h3>Scam Risk by Category</h3>
+                    <div class="data-grid">
+                        ${createScamCategoryCards(cityInfo.categories)}
+                    </div>
+                </div>
+            `;
+
+            // Add recommendations if available
+            if (cityInfo.safety_recommendations) {
+                const recommendationsHtml = cityInfo.safety_recommendations
+                    .map(rec => `<li>${rec}</li>`)
+                    .join('');
+
+                cityDetails.innerHTML += `
+                    <div class="data-section">
+                        <h3>Safety Recommendations</h3>
+                        <div class="recommendations">
+                            <ul>
+                                ${recommendationsHtml}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Add demographics if available
+            if (cityInfo.demographics) {
+                cityDetails.innerHTML += `
+                    <div class="data-section">
+                        <h3>Demographics</h3>
+                        <div class="data-grid">
+                            <div class="data-card">
+                                <div class="card-title">Population</div>
+                                <div class="card-value">${cityInfo.demographics.population.toLocaleString()}</div>
+                            </div>
+                            <div class="data-card">
+                                <div class="card-title">Median Income</div>
+                                <div class="card-value">$${cityInfo.demographics.median_income.toLocaleString()}</div>
+                            </div>
+                            <div class="data-card">
+                                <div class="card-title">Elderly Population</div>
+                                <div class="card-value">${cityInfo.demographics.elderly_percentage}%</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Create scam category cards
+        function createScamCategoryCards(categories) {
+            let cards = '';
+
+            for (const [category, rate] of Object.entries(categories)) {
+                // Get color based on rate
+                const color = getRateColor(rate);
+
+                // Format category name
+                let categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+                if (category === "in_person") categoryName = "In-Person";
+
+                cards += `
+                    <div class="data-card">
+                        <div class="card-title">${categoryName} Scams</div>
+                        <div class="card-value">${rate.toFixed(1)}/100</div>
+                        <div class="progress-bar">
+                            <div class="progress-value" style="width: ${rate}%; background-color: ${color};"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return cards;
+        }
+
+        // Helper function to get CSS class for risk level
+        function getRiskClass(riskLevel) {
+            switch(riskLevel) {
+                case "Very Low": return "risk-very-low";
+                case "Low": return "risk-low";
+                case "Moderate": return "risk-moderate";
+                case "High": return "risk-high";
+                case "Very High": return "risk-very-high";
+                default: return "risk-moderate";
+            }
+        }
+
+        // Helper function to get marker color based on risk level
+        function getMarkerColor(riskLevel) {
+            switch(riskLevel) {
+                case "Very Low": return "#2ecc71";
+                case "Low": return "#27ae60";
+                case "Moderate": return "#f39c12";
+                case "High": return "#e74c3c";
+                case "Very High": return "#c0392b";
+                default: return "#f39c12";
+            }
+        }
+
+        // Helper function to get color based on rate
+        function getRateColor(rate) {
+            if (rate < 20) return "#2ecc71";
+            else if (rate < 40) return "#27ae60";
+            else if (rate < 60) return "#f39c12";
+            else if (rate < 80) return "#e74c3c";
+            else return "#c0392b";
+        }
+    </script>
+
+    <!-- Google Maps API with visualization library for heatmap -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfgAjZ7FB-IexoIZNB4wO0y5_21Xc2Kxc&libraries=visualization&callback=initMap" async defer></script>
+</body>
+</html>
